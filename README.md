@@ -2,7 +2,7 @@
 
 Converts units inline directly in Discord messages. Supports temperature, distance, weight, length and volume conversions.
 
-This plugin is just a curiosity project of mine and I havely used Claude Opus to generate the logical parts of the code.
+This plugin is just a curiosity project of mine and I heavily used Claude Opus to generate the logical parts of the code.
 
 ## Features
 
