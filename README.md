@@ -36,7 +36,3 @@ Unofficial Vencord plugins cannot be installed in a pre-built Vencord setup. You
 I'm want to add this plugin to the official Vencord plugin repository, but i'm not really sure.
 
 If you have some issues or suggestions, feel free to open an issue or a pull request.
-
-## Issues I have
-
-I'm currently have Discord crashes sometimes when opening a channel after Discord starts. After one crash it happens every time on startup (I only see my friend list for a split second). Somehow reinstalling the custom build works. I have no idea why this happens.
