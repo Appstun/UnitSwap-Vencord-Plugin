@@ -33,6 +33,5 @@ Unofficial Vencord plugins cannot be installed in a pre-built Vencord setup. You
 
 ## Future plans
 
-I'm want to add this plugin to the official Vencord plugin repository, but i'm not really sure.
-
+I want to add this plugin to the official Vencord plugin repository, but I'm not really sure. The Vencord team does not currently accept new plugins. (See [plugin-request repo](https://github.com/Vencord/plugin-requests))
 If you have some issues or suggestions, feel free to open an issue or a pull request.
