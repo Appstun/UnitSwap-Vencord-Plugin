@@ -4,52 +4,35 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { findByPropsLazy } from "@webpack";
+import { findCssClassesLazy } from "@webpack";
 import { Tooltip } from "@webpack/common";
 import type { ReactElement, ReactNode } from "react";
 
-import { logger } from ".";
 import { ESCAPED_PRESEND_REGEX, ESCAPED_UNIT_REGEX, MALFORMED_U_REGEX, NATURAL_UNIT_MAP, NATURAL_UNIT_REGEX, PRESEND_REGEX, PROCESSED_MARKER, UNIT_REGEX } from "./constants";
 import { convertUnit } from "./converters/_index";
 import { settings } from "./settings";
-import { ContentNode, DiscordElement, ExcludedRange, MeasurementUnit, TooltipChildProps, UNIT_CONFIGS, UnitMatchInfo, UnitsByType, UnitType } from "./types";
+import { ContentNode, DiscordElement, ExcludedRange, MeasurementUnit, UNIT_CONFIGS, UnitMatchInfo, UnitsByType, UnitType } from "./types";
 
-const TimestampClasses = findByPropsLazy("timestamp", "blockquoteContainer");
+const TimestampClasses = findCssClassesLazy("timestamp", "blockquoteContainer");
 
 // Cache for converted values to avoid redundant calculations
 const conversionCache = new Map<string, { converted: string; original: string; }>();
 const MAX_CACHE_SIZE = 500;
 
-/** Safe Tooltip wrapper component that handles cases where Tooltip might not be ready */
-function UnitTooltip({ text, children, fallbackTitle }: {
+/** Safe Tooltip wrapper using inline span */
+function UnitTooltip({ text, children }: {
     text: ReactNode;
     children: string;
-    fallbackTitle: string;
 }) {
-    try {
-        return (
-            <Tooltip text={text}>
-                {(tooltipProps: TooltipChildProps) => (
-                    <span
-                        {...tooltipProps}
-                        className={TimestampClasses?.timestamp}
-                    >
-                        {children}
-                    </span>
-                )}
-            </Tooltip>
-        );
-    } catch {
-        logger.warn("Tooltip component not ready, using fallback.");
-        return (
-            <span
-                className={TimestampClasses?.timestamp}
-                title={fallbackTitle}
-            >
-                {children}
-            </span>
-        );
-    }
+    return (
+        <Tooltip text={text}>
+            {tooltipProps => (
+                <span {...tooltipProps} className={TimestampClasses?.timestamp}>
+                    {children}
+                </span>
+            )}
+        </Tooltip>
+    );
 }
 
 function getCachedConversion<T extends UnitType = UnitType>(
@@ -120,7 +103,13 @@ export function processNodes(nodes: ContentNode[]): ContentNode[] {
                 result.push(node as ReactElement);
                 continue;
             }
-            if (node.props.children) {
+            // Skip nodes where children is a function (render props pattern)
+            // These are used by components like Tooltip, Popout, etc.
+            if (typeof node.props.children === "function") {
+                result.push(node as ReactElement);
+                continue;
+            }
+            if (node.props.children != null) {
                 const newNode = { ...node } as DiscordElement;
                 const children = Array.isArray(node.props.children)
                     ? node.props.children
@@ -286,7 +275,6 @@ export function processString(text: string, idx: number): ContentNode[] {
             <UnitTooltip
                 key={`unit-${idx}-${m.start}`}
                 text={tooltipContent}
-                fallbackTitle={`Original: ${originalValue}`}
             >
                 {converted}
             </UnitTooltip>
