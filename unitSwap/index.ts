@@ -6,13 +6,16 @@
 
 import { Logger } from "@utils/Logger";
 import definePlugin from "@utils/types";
-import { lodash } from "@webpack/common";
 
-import { MALFORMED_U_REGEX, NATURAL_UNIT_MAP, PRESEND_REGEX, PROCESSED_MARKER, UNICODE_EMOJI_RANGE_REGEX } from "./constants";
+// import { lodash } from "@webpack/common";
+import { MALFORMED_U_REGEX, NATURAL_UNIT_MAP, NATURAL_UNIT_REGEX, PRESEND_REGEX, PROCESSED_MARKER, UNICODE_EMOJI_RANGE_REGEX } from "./constants";
 import { convertUnit } from "./converters/_index";
 import { processNodes } from "./parser";
 import { settings, SettingsAboutComponent } from "./settings";
 import { ContentNode } from "./types";
+
+// Quick-check regex for <uX:...> syntax (non-global for test only)
+const QUICK_UNIT_SYNTAX = /<u[TDLWV]:/i;
 
 export const logger = new Logger("UnitSwap", "#f1c40f");
 
@@ -37,8 +40,18 @@ export default definePlugin({
         if (!content || !Array.isArray(content)) return content;
 
         try {
-            const newContent = lodash.cloneDeep(content);
-            return processNodes(newContent);
+            // quick check if there isn any unit syntax to process
+            const contentStr = JSON.stringify(content);
+            const hasUnitSyntax = QUICK_UNIT_SYNTAX.test(contentStr);
+            const hasNaturalUnits = settings.store.autoDetect && NATURAL_UNIT_REGEX.test(contentStr);
+            NATURAL_UNIT_REGEX.lastIndex = 0; // Reset after test
+
+            if (!hasUnitSyntax && !hasNaturalUnits) return content;
+
+            //! testing without deep clone
+            // const newContent = lodash.cloneDeep(content);
+            // return processNodes(newContent);
+            return processNodes(content);
         } catch (err) {
             logger.error("Error transforming content:", err);
             return content;
