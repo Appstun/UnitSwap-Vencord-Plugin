@@ -62,7 +62,7 @@ export const ESCAPED_PRESEND_REGEX = new RegExp(`<!u:${VALUE}\\s*${UNITS}:${TARG
 export const MALFORMED_U_REGEX = /<u[^>]*>/gi;
 
 // Natural format regex: matches values like 32.2km, -12K, -12,423 °C, 5.5 kg
-export const NATURAL_UNIT_REGEX = new RegExp(`${VALUE}\\s*${UNITS}\\b`, "gi");
+export const NATURAL_UNIT_REGEX = new RegExp(`(?<!/)${VALUE}\\s*${UNITS}\\b`, "gi");
 
 // Regex to match emojis
 export const UNICODE_EMOJI_RANGE_REGEX = "([\\u{1F000}-\\u{1F9FF}]|[\\u{2600}-\\u{27BF}])";
