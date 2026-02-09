@@ -30,7 +30,7 @@ export default definePlugin({
         {
             find: '["strong","em","u","text","inlineCode","s","spoiler"]',
             replacement: {
-                match: /(?=return{hasSpoilerEmbeds:\i,content:(\i))/,
+                match: /(?=return{hasSpoilerEmbeds:\i,hasBailedAst:\i,content:(\i))/,
                 replace: (_, content) => `${content}=$self.transformContent(${content});`
             }
         }
