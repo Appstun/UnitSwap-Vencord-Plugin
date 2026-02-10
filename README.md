@@ -25,10 +25,6 @@ Unofficial Vencord plugins cannot be installed in a pre-built Vencord setup. You
 3. To install Vencord to Discord, run `pnpm run build` and then `pnpm run inject` in the main Vencord directory. Follow the instructions in the terminal to complete the injection.
 4. Start Discord and enable the UnitSwap plugin in Vencord settings.
 
-> [!NOTE]
-> After you have installed the custom Vencord build, you need to manually update Vencord in the future. To do so, pull the latest changes from the Vencord repository, rebuild, and re-inject.
-
-
 # Some other things
 
 ## Future plans
