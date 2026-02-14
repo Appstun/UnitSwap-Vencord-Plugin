@@ -17,7 +17,7 @@ const TimestampClasses = findCssClassesLazy("timestamp", "blockquoteContainer");
 
 // Cache for converted values to avoid redundant calculations
 const conversionCache = new Map<string, { converted: string; original: string; }>();
-const MAX_CACHE_SIZE = 500;
+const MAX_CACHE_SIZE = 100;
 
 /** Safe Tooltip wrapper using inline span */
 function UnitTooltip({ text, children }: {
