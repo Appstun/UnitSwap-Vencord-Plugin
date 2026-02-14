@@ -44,7 +44,8 @@ function getCachedConversion<T extends UnitType = UnitType>(
     autoTrim: boolean,
     maxDecimalPlaces: number
 ): { converted: string; original: string; } {
-    const cacheKey = `${type}:${value}:${fromUnit}:${toUnit}:${decimalPlaces}:${autoTrim}:${maxDecimalPlaces}`;
+    const useDot = settings.store.useDotAsDecimalSeparator;
+    const cacheKey = `${type}:${value}:${fromUnit}:${toUnit}:${decimalPlaces}:${autoTrim}:${maxDecimalPlaces}:${useDot}`;
 
     const cached = conversionCache.get(cacheKey);
     if (cached) return cached;

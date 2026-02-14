@@ -70,6 +70,8 @@ export const settings = definePluginSettings({
             }
         }
     },
+    useDotAsDecimalSeparator:
+        { type: OptionType.BOOLEAN, description: "Use dot (.) as decimal separator instead of comma (,)", default: false },
     preferredTemperature: generateUnitDropdown("T", "temperature", "C"),
     preferredDistance: generateUnitDropdown("D", "distance", "km"),
     preferredLength: generateUnitDropdown("L", "length", "cm"),

@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { settings } from "../settings";
 import type { ConversionResult, DistanceUnit, LengthUnit, TemperatureUnit, UnitsByType, UnitType, VolumeUnit, WeightUnit } from "../types";
 import { convertDistance, formatDistance } from "./distance";
 import { convertLength, formatLength } from "./length";
@@ -24,7 +25,9 @@ export function formatValue(
     if (autoTrim) {
         formatted = formatted.replace(/\.?0+$/, "");
     }
-    formatted = formatted.replace(".", ",");
+    if (!settings.store.useDotAsDecimalSeparator) {
+        formatted = formatted.replace(".", ",");
+    }
     return `${formatted}${unitStr}`;
 }
 
