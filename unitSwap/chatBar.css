@@ -1,0 +1,110 @@
+/* ── UnitSwap ChatBar Popout ─────────────────────────────────────── */
+
+.vc-unitswap-popout {
+    width: 280px;
+    padding: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-high);
+    border: 1px solid var(--background-modifier-accent);
+    color: var(--text-normal) !important;
+}
+
+.theme-dark .vc-unitswap-popout {
+    background: var(--background-floating, #111214) !important;
+}
+
+.theme-light .vc-unitswap-popout {
+    background: var(--background-floating, #fff) !important;
+}
+
+/* ── Header ─────────────────────────────────────────────────────── */
+
+.vc-unitswap-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border-bottom: 1px solid var(--background-modifier-accent);
+}
+
+.vc-unitswap-header-icon {
+    flex-shrink: 0;
+    opacity: 1 !important;
+}
+
+.vc-unitswap-header-title {
+    font-size: 16px;
+    font-weight: 600;
+    opacity: 1 !important;
+}
+
+/* ── Options ────────────────────────────────────────────────────── */
+
+.vc-unitswap-options {
+    padding: 2px 6px 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.vc-unitswap-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 8px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.vc-unitswap-option:hover {
+    background: var(--background-modifier-hover);
+}
+
+.vc-unitswap-option-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+
+.vc-unitswap-option-label {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
+    opacity: 1 !important;
+}
+
+.vc-unitswap-option-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.3;
+}
+
+.theme-dark .vc-unitswap-header-icon,
+.theme-dark .vc-unitswap-header-title,
+.theme-dark .vc-unitswap-option-label {
+    color: #f2f3f5 !important;
+}
+
+.theme-light .vc-unitswap-header-icon,
+.theme-light .vc-unitswap-header-title,
+.theme-light .vc-unitswap-option-label {
+    color: #060607 !important;
+}
+
+/* ── ChatBar Icon ──────────────────────────────────────────────── */
+
+.vc-unitswap-icon {
+    display: block;
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+    transition: color 0.15s ease;
+}
+
+.vc-unitswap-icon-active {
+    color: var(--green-360);
+}

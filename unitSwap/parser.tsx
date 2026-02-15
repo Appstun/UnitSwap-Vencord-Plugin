@@ -132,6 +132,9 @@ export function processNodes(nodes: ContentNode[]): ContentNode[] {
 
 /** Process a string and convert any unit matches to React elements */
 export function processString(text: string, idx: number): ContentNode[] {
+    // Remove internal refresh markers used to force reparse after option toggles
+    text = text.replace(/[\u200B\u200C]+$/g, "");
+
     // Skip already processed text (contains zero-width space marker from pre-send)
     if (text.includes(PROCESSED_MARKER)) return [text];
 

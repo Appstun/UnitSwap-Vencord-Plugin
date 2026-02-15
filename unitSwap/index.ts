@@ -8,6 +8,7 @@ import { Logger } from "@utils/Logger";
 import definePlugin from "@utils/types";
 
 // import { lodash } from "@webpack/common";
+import { UnitSwapChatBarButton, UnitSwapIcon } from "./chatBar";
 import { MALFORMED_U_REGEX, NATURAL_UNIT_MAP, NATURAL_UNIT_REGEX, PRESEND_REGEX, PROCESSED_MARKER, UNICODE_EMOJI_RANGE_REGEX } from "./constants";
 import { convertUnit } from "./converters/_index";
 import { processNodes } from "./parser";
@@ -24,7 +25,13 @@ export default definePlugin({
     name: "UnitSwap",
     description: "Converts units inline. Use <uD:16km> for client-side or <u:16km:mi,m> for pre-send. Escape with \\<u (pre-send) or <!u (rendered view).",
     authors: [{ id: 625678351910305802n, name: "Appstun" }],
+    dependencies: ["MessageUpdaterAPI"],
     settings,
+
+    chatBarButton: {
+        icon: UnitSwapIcon,
+        render: UnitSwapChatBarButton
+    },
 
     patches: [
         {

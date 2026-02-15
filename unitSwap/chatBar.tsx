@@ -1,0 +1,170 @@
+/*
+ * Vencord, a Discord client mod
+ * Copyright (c) 2026 Vendicated and contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+import "./chatBar.css";
+
+import { ChatBarButton, ChatBarButtonFactory } from "@api/ChatButtons";
+import { updateMessage } from "@api/MessageUpdater";
+import { Switch } from "@components/Switch";
+import { classNameFactory } from "@utils/css";
+import { classes } from "@utils/misc";
+import { IconComponent } from "@utils/types";
+import { MessageStore, Popout, SelectedChannelStore, useEffect, useRef, useState } from "@webpack/common";
+
+import { settings } from "./settings";
+
+const cl = classNameFactory("vc-unitswap-");
+let refreshMarkerToggle = false;
+
+function refreshCurrentChannelMessages() {
+    const channelId = SelectedChannelStore.getChannelId();
+    if (!channelId) return;
+
+    const messages = MessageStore.getMessages(channelId)?._array;
+    if (!Array.isArray(messages) || messages.length === 0) return;
+
+    // Toggle an invisible marker to force Discord's markdown pipeline to rebuild content.
+    // Without this, some messages only re-render after hover interactions.
+    refreshMarkerToggle = !refreshMarkerToggle;
+    const marker = refreshMarkerToggle ? "\u200B" : "\u200C";
+
+    for (const message of messages) {
+        if (message?.id) {
+            const content = String(message.content ?? "").replace(/[\u200B\u200C]+$/g, "");
+            updateMessage(channelId, message.id, {
+                content: content + marker
+            });
+        }
+    }
+
+    MessageStore.emitChange();
+}
+
+// ── Icon ──────────────────────────────────────────────────────────────────────
+
+export const UnitSwapIcon: IconComponent = ({ height = 18, width = 18, className }) => (
+    <svg
+        aria-hidden="true"
+        role="img"
+        width={width}
+        height={height}
+        className={className}
+        viewBox="0 0 32 32"
+        fill="none"
+    >
+        <path
+            fill="currentColor"
+            d="M23.9993 0H11.9493C11.7734 2.38229e-06 11.6016 0.0521372 11.4554 0.149821C11.3092 0.247504 11.1953 0.38635 11.128 0.548788C11.0607 0.711223 11.0432 0.889959 11.0775 1.06239C11.1118 1.23482 11.1965 1.39321 11.3208 1.51751L13.5745 3.7712C13.9079 4.1046 14.0952 4.55678 14.0952 5.02827C14.0952 5.49975 13.9079 5.95193 13.5745 6.28533L11.0604 8.79964C10.0602 9.79984 9.49829 11.1564 9.49829 12.5708C9.49829 13.9853 10.0602 15.3418 11.0604 16.342C11.3938 16.6754 11.8459 16.8627 12.3174 16.8627C12.7889 16.8627 13.2411 16.6754 13.5745 16.342L17.3459 12.5708C18.0127 11.9041 18.917 11.5295 19.8599 11.5295C20.8031 11.5295 21.7074 11.9041 22.3741 12.5708L23.3707 13.5675C23.495 13.6918 23.6534 13.7765 23.8258 13.8108C23.9983 13.8451 24.1771 13.8275 24.3394 13.7603C24.5019 13.693 24.6407 13.5791 24.7385 13.4329C24.8361 13.2867 24.8882 13.1148 24.8882 12.939V0.888889C24.8882 0.653141 24.7945 0.427047 24.6279 0.260348C24.4612 0.0936498 24.2351 0 23.9993 0Z"
+        />
+        <path
+            fill="currentColor"
+            d="M7.99997 31.9999H20.0501C20.2259 31.9999 20.3978 31.9478 20.544 31.8502C20.6901 31.7524 20.8041 31.6136 20.8713 31.4511C20.9386 31.2888 20.9562 31.1099 20.9219 30.9375C20.8876 30.765 20.8028 30.6068 20.6785 30.4824L18.4249 28.2287C18.0915 27.8953 17.9042 27.4431 17.9042 26.9716C17.9042 26.5001 18.0915 26.0481 18.4249 25.7145L20.939 23.2002C21.9392 22.2001 22.5011 20.8436 22.5011 19.429C22.5011 18.0146 21.9392 16.6581 20.939 15.6579C20.6057 15.3245 20.1534 15.1372 19.6819 15.1372C19.2105 15.1372 18.7582 15.3245 18.4249 15.6579L14.6535 19.429C13.9867 20.0959 13.0823 20.4705 12.1394 20.4705C11.1964 20.4705 10.292 20.0959 9.62522 19.429L8.62861 18.4324C8.50431 18.3081 8.34591 18.2235 8.17348 18.1892C8.00104 18.1549 7.8223 18.1723 7.65987 18.2397C7.49741 18.3069 7.35859 18.4209 7.2609 18.567C7.16323 18.7133 7.11108 18.885 7.11108 19.0609V31.111C7.11108 31.3467 7.20476 31.5729 7.37144 31.7396C7.53814 31.9064 7.76422 31.9999 7.99997 31.9999Z"
+        />
+    </svg>
+);
+
+// ── Popout Panel ──────────────────────────────────────────────────────────────
+
+function UnitSwapPopout() {
+    const { autoDetect, useDotAsDecimalSeparator } = settings.use(["autoDetect", "useDotAsDecimalSeparator"]);
+    const didMountRef = useRef(false);
+
+    useEffect(() => {
+        if (!didMountRef.current) {
+            didMountRef.current = true;
+            return;
+        }
+
+        refreshCurrentChannelMessages();
+    }, [autoDetect, useDotAsDecimalSeparator]);
+
+    const setAutoDetect = (value: boolean) => {
+        if (settings.store.autoDetect === value) return;
+        settings.store.autoDetect = value;
+    };
+
+    const setDecimalSeparator = (value: boolean) => {
+        if (settings.store.useDotAsDecimalSeparator === value) return;
+        settings.store.useDotAsDecimalSeparator = value;
+    };
+
+    return (
+        <div className={cl("popout")}>
+            <div className={cl("header")}>
+                <UnitSwapIcon width={18} height={18} className={cl("header-icon")} />
+                <span className={cl("header-title")}>UnitSwap</span>
+            </div>
+
+            <div className={cl("options")}>
+                <div
+                    className={cl("option")}
+                    onClick={() => setAutoDetect(!autoDetect)}
+                >
+                    <div className={cl("option-text")}>
+                        <span className={cl("option-label")}>Auto-Detect</span>
+                        <span className={cl("option-desc")}>Automatically detects units</span>
+                    </div>
+                    <Switch
+                        checked={autoDetect}
+                        onChange={setAutoDetect}
+                    />
+                </div>
+
+                <div
+                    className={cl("option")}
+                    onClick={() => setDecimalSeparator(!useDotAsDecimalSeparator)}
+                >
+                    <div className={cl("option-text")}>
+                        <span className={cl("option-label")}>Use dot as decimal separator</span>
+                        <span className={cl("option-desc")}>1.5 (dot) instead of 1,5 (comma)</span>
+                    </div>
+                    <Switch
+                        checked={useDotAsDecimalSeparator}
+                        onChange={setDecimalSeparator}
+                    />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ── ChatBar Button ────────────────────────────────────────────────────────────
+
+export const UnitSwapChatBarButton: ChatBarButtonFactory = ({ isMainChat }) => {
+    if (!isMainChat) return null;
+
+    const { autoDetect } = settings.use(["autoDetect"]);
+    const buttonRef = useRef<HTMLDivElement>(null);
+    const [show, setShow] = useState(false);
+
+    return (
+        <div ref={buttonRef}>
+            <Popout
+                position="top"
+                align="center"
+                animation={Popout.Animation.NONE}
+                shouldShow={show}
+                onRequestClose={() => setShow(false)}
+                targetElementRef={buttonRef}
+                renderPopout={() => <UnitSwapPopout />}
+            >
+                {(_, { isShown }) => (
+                    <ChatBarButton
+                        tooltip="UnitSwap Settings"
+                        onClick={() => setShow(v => !v)}
+                        buttonProps={{
+                            "aria-haspopup": "dialog",
+                        }}
+                    >
+                        <UnitSwapIcon
+                            className={classes(cl("icon"), autoDetect && cl("icon-active"))}
+                        />
+                    </ChatBarButton>
+                )}
+            </Popout>
+        </div>
+    );
+};
